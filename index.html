@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Nabees TikTok Downloader</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      background: linear-gradient(145deg, #0b0d19 0%, #131625 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1.5rem;
+    }
+
+    .app {
+      max-width: 750px;
+      width: 100%;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 0.5rem;
+    }
+
+    .logo i {
+      font-size: 2.2rem;
+      color: #fe2c55;
+    }
+
+    .logo h1 {
+      font-size: 1.9rem;
+      font-weight: 700;
+      color: white;
+      letter-spacing: -0.5px;
+    }
+
+    .sub {
+      color: #9ca3af;
+      font-size: 0.85rem;
+    }
+
+    .card {
+      background: rgba(20, 25, 40, 0.6);
+      backdrop-filter: blur(16px);
+      border-radius: 2rem;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      overflow: hidden;
+      box-shadow: 0 25px 45px rgba(0, 0, 0, 0.3);
+    }
+
+    .input-area {
+      padding: 2rem 2rem 1.5rem 2rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .input-label {
+      text-align: center;
+      margin-bottom: 1rem;
+      color: #cbd5e1;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .input-wrapper {
+      max-width: 550px;
+      margin: 0 auto;
+    }
+
+    .paste-box {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 1rem 1.5rem;
+      border-radius: 1.2rem;
+      font-size: 0.95rem;
+      color: white;
+      font-family: 'Inter', monospace;
+      outline: none;
+      transition: all 0.2s;
+      text-align: center;
+    }
+
+    .paste-box:focus {
+      border-color: #fe2c55;
+      background: rgba(0, 0, 0, 0.6);
+      box-shadow: 0 0 0 3px rgba(254, 44, 85, 0.1);
+    }
+
+    .paste-box::placeholder {
+      color: #6b7280;
+      text-align: center;
+    }
+
+    .btn-container {
+      display: flex;
+      justify-content: center;
+      margin-top: 1.5rem;
+    }
+
+    .btn-primary {
+      background: linear-gradient(95deg, #fe2c55, #ff5c7c);
+      border: none;
+      padding: 1rem 2.5rem;
+      border-radius: 3rem;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: white;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 8px 20px rgba(254, 44, 85, 0.3);
+      min-width: 220px;
+      justify-content: center;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      background: linear-gradient(95deg, #fe1a48, #ff4a6e);
+      box-shadow: 0 12px 28px rgba(254, 44, 85, 0.4);
+    }
+
+    .btn-primary:active {
+      transform: translateY(1px);
+    }
+
+    .status {
+      margin-top: 1.2rem;
+      padding: 0.75rem 1rem;
+      border-radius: 1rem;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      max-width: 550px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .status-info {
+      background: rgba(59, 130, 246, 0.12);
+      border-left: 3px solid #3b82f6;
+      color: #93c5fd;
+    }
+
+    .status-error {
+      background: rgba(239, 68, 68, 0.12);
+      border-left: 3px solid #ef4444;
+      color: #fca5a5;
+    }
+
+    .status-success {
+      background: rgba(34, 197, 94, 0.12);
+      border-left: 3px solid #22c55e;
+      color: #86efac;
+    }
+
+    .result-area {
+      padding: 1.5rem 2rem 2rem 2rem;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .video-card {
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 1.5rem;
+      padding: 1.2rem;
+    }
+
+    .video-title {
+      color: white;
+      font-size: 0.9rem;
+      line-height: 1.4;
+      font-weight: 500;
+      margin-bottom: 1rem;
+      padding-bottom: 0.8rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .video-title i {
+      color: #fe2c55;
+      margin-top: 2px;
+    }
+
+    .content-row {
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .thumbnail-col {
+      flex: 0 0 150px;
+    }
+
+    .thumbnail-box {
+      border-radius: 1rem;
+      overflow: hidden;
+      background: rgba(0, 0, 0, 0.4);
+      aspect-ratio: 9/16;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .thumbnail-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .download-col {
+      flex: 1;
+      min-width: 250px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      justify-content: center;
+    }
+
+    .download-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 1rem 1.2rem;
+      border-radius: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: white;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .download-btn:hover {
+      background: rgba(254, 44, 85, 0.2);
+      border-color: #fe2c55;
+      transform: translateX(5px);
+    }
+
+    .btn-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-left i {
+      width: 24px;
+      font-size: 1.1rem;
+    }
+
+    .badge {
+      font-size: 0.65rem;
+      background: rgba(254, 44, 85, 0.3);
+      padding: 2px 8px;
+      border-radius: 20px;
+      margin-left: 8px;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 1.5rem;
+      font-size: 0.7rem;
+      color: #6b7280;
+    }
+
+    @media (max-width: 600px) {
+      .input-area {
+        padding: 1.5rem;
+      }
+      .result-area {
+        padding: 1.2rem;
+      }
+      .content-row {
+        flex-direction: column;
+        align-items: center;
+      }
+      .thumbnail-col {
+        flex: 0 0 auto;
+        width: 140px;
+      }
+      .download-col {
+        width: 100%;
+      }
+      .btn-primary {
+        padding: 0.8rem 2rem;
+        font-size: 1rem;
+        min-width: 180px;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="logo">
+      <i class="fab fa-tiktok"></i>
+      <h1>Nabees TikTok</h1>
+    </div>
+    <div class="sub">Download videos without watermark — Fast & Free</div>
+  </div>
+
+  <div class="card">
+    <div class="input-area">
+      <div class="input-label">
+        <i class="fas fa-link"></i> Paste TikTok video link
+      </div>
+      <div class="input-wrapper">
+        <input type="text" id="urlInput" class="paste-box" placeholder="https://vt.tiktok.com/xxxxx or https://www.tiktok.com/@user/video/xxxxx">
+      </div>
+      <div class="btn-container">
+        <button id="fetchBtn" class="btn-primary">
+          <i class="fas fa-download"></i> Get Video
+        </button>
+      </div>
+      <div id="statusContainer"></div>
+    </div>
+
+    <div id="resultContainer"></div>
+  </div>
+
+  <div class="footer">
+    <i class="fas fa-shield-alt"></i> Powered by EliteProtech API
+  </div>
+</div>
+
+<script>
+  const API_URL = "https://eliteprotech-apis.zone.id/tiktok";
+  
+  const urlInput = document.getElementById('urlInput');
+  const fetchBtn = document.getElementById('fetchBtn');
+  const statusContainer = document.getElementById('statusContainer');
+  const resultContainer = document.getElementById('resultContainer');
+
+  function showStatus(message, type = 'info') {
+    const icons = {
+      info: '<i class="fas fa-circle-info"></i>',
+      error: '<i class="fas fa-circle-exclamation"></i>',
+      success: '<i class="fas fa-circle-check"></i>'
+    };
+    statusContainer.innerHTML = `<div class="status status-${type}">${icons[type]} ${message}</div>`;
+    if (type === 'success') {
+      setTimeout(() => {
+        if (statusContainer.innerHTML.includes(message)) {
+          statusContainer.innerHTML = '';
+        }
+      }, 3000);
+    }
+  }
+
+  function clearStatus() {
+    statusContainer.innerHTML = '';
+  }
+
+  function showLoading() {
+    statusContainer.innerHTML = `<div class="status status-info"><i class="fas fa-spinner fa-pulse"></i> Fetching video data...</div>`;
+  }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  // Open download link in new tab (works reliably)
+  function triggerDownload(url) {
+    if (!url) {
+      showStatus("Download link not available", 'error');
+      return;
+    }
+    window.open(url, '_blank');
+    showStatus("Download started! Check your browser downloads.", 'success');
+  }
+
+  async function fetchVideoData() {
+    const videoUrl = urlInput.value.trim();
+    
+    if (!videoUrl) {
+      showStatus("Please enter a TikTok video URL", 'error');
+      return;
+    }
+    
+    if (!videoUrl.includes('tiktok.com') && !videoUrl.includes('vt.tiktok')) {
+      showStatus("Please enter a valid TikTok URL", 'error');
+      return;
+    }
+    
+    clearStatus();
+    showLoading();
+    resultContainer.innerHTML = '';
+    
+    try {
+      const encodedUrl = encodeURIComponent(videoUrl);
+      const fullUrl = `${API_URL}?url=${encodedUrl}`;
+      
+      const response = await fetch(fullUrl);
+      
+      if (!response.ok) {
+        throw new Error(`API returned ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      if (data && data.success === true) {
+        if (!data.mp4 && !data.mp4_hd) {
+          showStatus("Video URL not found in API response", 'error');
+          return;
+        }
+        
+        renderResult(data);
+        showStatus("Video ready! Click any button to download.", 'success');
+      } else {
+        const errorMsg = data?.message || data?.error || "Failed to process video. The link might be invalid or private.";
+        showStatus(errorMsg, 'error');
+      }
+      
+    } catch (error) {
+      console.error('Fetch error:', error);
+      showStatus("Network error. Please check your connection and try again.", 'error');
+    }
+  }
+  
+  function renderResult(data) {
+    const title = data.title || 'TikTok Video';
+    const thumbnail = data.thumbnail || '';
+    const mp4Url = data.mp4;
+    const mp4HdUrl = data.mp4_hd;
+    const mp3Url = data.mp3;
+    
+    let buttonsHtml = '';
+    
+    if (mp4Url) {
+      buttonsHtml += `
+        <div class="download-btn" onclick="triggerDownload('${escapeHtml(mp4Url).replace(/'/g, "\\'")}')">
+          <div class="btn-left">
+            <i class="fas fa-video"></i>
+            <span>Download Video</span>
+            <span class="badge">Standard</span>
+          </div>
+          <i class="fas fa-arrow-down"></i>
+        </div>
+      `;
+    }
+    
+    if (mp4HdUrl) {
+      buttonsHtml += `
+        <div class="download-btn" onclick="triggerDownload('${escapeHtml(mp4HdUrl).replace(/'/g, "\\'")}')">
+          <div class="btn-left">
+            <i class="fas fa-video"></i>
+            <span>Download Video</span>
+            <span class="badge">HD Quality</span>
+          </div>
+          <i class="fas fa-arrow-down"></i>
+        </div>
+      `;
+    }
+    
+    if (mp3Url) {
+      buttonsHtml += `
+        <div class="download-btn" onclick="triggerDownload('${escapeHtml(mp3Url).replace(/'/g, "\\'")}')">
+          <div class="btn-left">
+            <i class="fas fa-music"></i>
+            <span>Download Audio</span>
+            <span class="badge">MP3</span>
+          </div>
+          <i class="fas fa-arrow-down"></i>
+        </div>
+      `;
+    }
+    
+    const html = `
+      <div class="result-area">
+        <div class="video-card">
+          <div class="video-title">
+            <i class="fab fa-tiktok"></i>
+            <span>${escapeHtml(title.length > 100 ? title.substring(0, 100) + '...' : title)}</span>
+          </div>
+          <div class="content-row">
+            <div class="thumbnail-col">
+              <div class="thumbnail-box">
+                ${thumbnail ? `<img src="${escapeHtml(thumbnail)}" alt="thumbnail" onerror="this.parentElement.innerHTML='<div style=\\'padding:1rem;text-align:center\\'><i class=\\'fas fa-image fa-2x\\' style=\\'opacity:0.3\\'></i></div>'">` : '<div style="padding:1rem;text-align:center"><i class="fas fa-image fa-2x" style="opacity:0.3"></i></div>'}
+              </div>
+            </div>
+            <div class="download-col">
+              ${buttonsHtml}
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    
+    resultContainer.innerHTML = html;
+  }
+  
+  // Make triggerDownload globally available for onclick
+  window.triggerDownload = triggerDownload;
+  
+  fetchBtn.addEventListener('click', fetchVideoData);
+  urlInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') fetchVideoData();
+  });
+</script>
+</body>
+</html>6
